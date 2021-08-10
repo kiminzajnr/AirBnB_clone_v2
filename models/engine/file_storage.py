@@ -36,10 +36,10 @@ class FileStorage:
         if obj is equal to None, the method should not do anything"""
         if obj:
             # form a key from the obj eg obj + obj.id
-            new_key = "{}.{}".format(obj, obj.id)
-            for k, val in self.__objects.items():
-                if new_key is k:
-                    del self.__objects[k]
+            new_key = "{}.{}".format(type(obj).__name__, obj.id)
+            if new_key in self.__objects:
+                del self.__objects[new_key]
+                self.save()
 
     def reload(self):
         """Loads storage dictionary from file"""
