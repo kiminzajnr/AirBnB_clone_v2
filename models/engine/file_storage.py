@@ -15,7 +15,8 @@ class FileStorage:
             for key, value in self.__objects.items():
                 if key.startswith(str(cls.__name__)):
                     one_type_objects[key] = value
-        one_type_objects = self.__objects
+        else:
+            one_type_objects = self.__objects
         return one_type_objects
 
     def new(self, obj):
