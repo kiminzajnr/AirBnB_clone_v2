@@ -4,14 +4,13 @@ that distributes an archive to your web servers,
 using the function do_deploy
 """
 import time
-import shutil
 import os
 from fabric.api import *
-from fabric.contrib import files
 from fabric.operations import run, put
 
 
-env.hosts = ['ubuntu@34.138.195.126', 'ubuntu@35.185.8.133']
+env.hosts = ['34.138.195.126', '35.185.8.133']
+env.user = 'ubuntu'
 
 
 def do_pack():
