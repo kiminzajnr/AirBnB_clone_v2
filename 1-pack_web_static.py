@@ -14,12 +14,11 @@ from fabric.api import local
 
 def do_pack():
     """generates a .tgz archive"""
-    time_stamp = time.strftime("%Y%m%d%H%M%S")
     try:
         local("mkdir -p versions")
         local("tar -cvzf versions/web_static_{:s}.tgz web_static/".
-              format(time_stamp))
+              format(time.strftime("%Y%m%d%H%M%S")))
         return "versions/web_static_{:s}.tgz".\
-            format(time_stamp)
-    except:
+            format(time.strftime("%Y%m%d%H%M%S"))
+    except BaseException:
         return None
