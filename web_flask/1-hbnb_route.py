@@ -9,12 +9,14 @@ You must use the option strict_slashes=False in your route definition
 from flask import Flask
 app = Flask(__name__)
 
+
 @app.route('/', strict_slashes=False)
 def hello_world():
     """
     returns the message to display in our browser
     """
     return 'Hello HBNB!'
+
 
 @app.route('/hbnb', strict_slashes=False)
 def hbnb():
