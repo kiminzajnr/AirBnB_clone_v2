@@ -32,7 +32,7 @@ def Cisfun(text):
     display "C" followed by the value of the text variable
     """
     string = 'C %s' % text
-    return string.replace('-', ' ')
+    return string.replace('_', ' ')
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
