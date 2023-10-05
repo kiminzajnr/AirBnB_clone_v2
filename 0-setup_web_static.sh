@@ -14,7 +14,7 @@ echo "<html>
   <head>
   </head>
   <body>
-    Holberton School
+    <h1>Hello World!!!!!<h1>
   </body>
 </html>" >> /data/web_static/releases/test/index.html
 
@@ -29,8 +29,8 @@ print %s "server {
 	server_name _;
 	add_header X-Served-By $HOSTNAME;
 
-	location /hbnb_static/ {
-		alias /data/web_static/current/hbnb_static/;
+	location /hbnb_static {
+		alias /data/web_static/current/;
 		index index.html;
 	}
 }" > /etc/nginx/sites-enabled/default
