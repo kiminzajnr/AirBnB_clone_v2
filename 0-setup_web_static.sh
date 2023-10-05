@@ -3,24 +3,24 @@
 sudo apt-get -y update
 sudo apt-get -y install nginx
 
-mkdir -p /data/
-mkdir -p /data/web_static/
-mkdir -p /data/web_static/releases/
-mkdir -p /data/web_static/shared/
-mkdir -p /data/web_static/releases/test/
+sudo mkdir -p /data/
+sudo mkdir -p /data/web_static/
+sudo mkdir -p /data/web_static/releases/
+sudo mkdir -p /data/web_static/shared/
+sudo mkdir -p /data/web_static/releases/test/
 
-touch /data/web_static/releases/test/index.html
-echo "<html>
+sudo touch /data/web_static/releases/test/index.html
+sudo echo "<html>
   <head>
   </head>
   <body>
     <h1>Hello World!!!!!<h1>
   </body>
-</html>" >> /data/web_static/releases/test/index.html
+</html>" | sudo tee /data/web_static/releases/test/index.html
 
-ln -sf /data/web_static/releases/test/ /data/web_static/current
+sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-chown -R ubuntu: /data/
+sudo chown -R ubuntu: /data/
 
 print %s "server {
 	listen 80 default_server;
@@ -35,4 +35,4 @@ print %s "server {
 	}
 }" > /etc/nginx/sites-enabled/default
 
-service nginx restart
+sudo service nginx restart
