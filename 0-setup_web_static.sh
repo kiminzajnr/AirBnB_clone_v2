@@ -3,36 +3,28 @@
 sudo apt-get -y update
 sudo apt-get -y install nginx
 
-sudo mkdir -p /data/
-sudo mkdir -p /data/web_static/
-sudo mkdir -p /data/web_static/releases/
-sudo mkdir -p /data/web_static/shared/
-sudo mkdir -p /data/web_static/releases/test/
+mkdir -p /data/
+mkdir -p /data/web_static/
+mkdir -p /data/web_static/releases/
+mkdir -p /data/web_static/shared/
+mkdir -p /data/web_static/releases/test/
 
-sudo touch /data/web_static/releases/test/index.html
-sudo echo "<html>
+touch /data/web_static/releases/test/index.html
+echo "<html>
   <head>
   </head>
   <body>
-    <h1>Hello World!!!!!<h1>
+    Holberton School
   </body>
-</html>" | sudo tee /data/web_static/releases/test/index.html
+</html>" | tee /data/web_static/releases/test/index.html > /dev/null
 
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
+ln -sf /data/web_static/releases/test/ /data/web_static/current
 
-sudo chown -R ubuntu: /data/
+chown -R ubuntu: /data/
 
-print %s "server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
-	root /var/www/html;
-	server_name _;
-	add_header X-Served-By $HOSTNAME;
+nginx_config="/etc/nginx/sites-available/default"
+if [ -e "$nginx_config" ]; then
+    sudo sed -i '/server_name _;/a \\n    location /hbnb_static/ {\n        alias /data/web_static/current/;\n    }\n' "$nginx_config"
+fi
 
-	location /hbnb_static {
-		alias /data/web_static/current/;
-		index index.html;
-	}
-}" > /etc/nginx/sites-enabled/default
-
-sudo service nginx restart
+service nginx restart
