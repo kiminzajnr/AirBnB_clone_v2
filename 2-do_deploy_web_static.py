@@ -10,9 +10,6 @@ from fabric.operations import run, put
 
 
 env.hosts = ['100.26.243.45', '54.236.24.205']
-env.user = 'ubuntu'
-env.key_filename = '~/.ssh/priv.key'
-
 
 def do_pack():
     """generates a .tgz archive"""
