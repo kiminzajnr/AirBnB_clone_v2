@@ -9,8 +9,9 @@ from fabric.api import *
 from fabric.operations import run, put
 
 
-env.hosts = ['34.138.195.126', '35.185.8.133']
+env.hosts = ['100.26.243.45', '54.236.24.205']
 env.user = 'ubuntu'
+env.key_filename = '~/.ssh/priv.key'
 
 
 def do_pack():
@@ -25,45 +26,85 @@ def do_pack():
         return None
 
 
+# def do_deploy(archive_path):
+#     """distributes an archive to my web servers"""
+#     if not os.path.exists(archive_path):
+#         return False
+#     try:
+#         # Upload archive
+#         put(archive_path, '/tmp/')
+#         archive_filename = archive_path.split('/')[-1]
+#         archive_name_noext = archive_filename.split('.')[0]
+#         release_path = f"/data/web_static/releases/{archive_name_noext}"
+#         run(f"mkdir -p {release_path}")
+#         run(f"tar -xzf /tmp/{archive_filename} -C {release_path}")
+
+#         run(f"rm /tmp/{archive_filename}")
+
+#         run("rm /data/web_static/current")
+
+#         run(f"ln -s {release_path} /data/web_static/current")
+
+#         return True
+#     except Exception as e:
+#         return False
+
 def do_deploy(archive_path):
-    """distributes an archive to my web servers"""
-    if not os.path.exists(archive_path):
+    """ Distributes an archive to the web servers"""
+
+    if os.path.isfile(archive_path) is False:
         return False
     try:
-        # Upload archive
-        put(archive_path, '/tmp/')
+        # Uncompress the archive to the folder /data/web_static/releases/
+        # <archive filename without extension> on the web server
+        archive_filename = archive_path.split("/")[-1]
+        archive_name = archive_filename.split(".")[0]
+        remove_folder = f'/data/web_static/releases/\
+            {archive_name}/web_static/*'
+        # check if the code is running locally or on remote hosts
+#         run_locally = os.getenv("run_locally", None)
+#         if run_locally is None:
+#             # local(f'rm -rf /data/web_static/releases/{archive_name}/')
+#             local(f'mkdir -p /data/web_static/releases/{archive_name}')
+#             local(f'tar -xzf {archive_path} -C\
+#  /data/web_static/releases/{archive_name}/')
 
-        # Create a target dir without the file extension
-        timestamp = time.strftime("%Y%m%d%H%M%S")
-        run(
-            'sudo mkdir -p /data/web_static/releases/web_static_{:s}/'.
-            format(timestamp))
+#             local(f'mv /data/web_static/releases/\
+# {archive_name}/web_static/* '
+#                   f'/data/web_static/releases/{archive_name}/')
+#             local(f'rm -rf {remove_folder}')
+#             local(f'rm -rf /data/web_static/current')
+#             local(f'rm -rfR /data/web_static/current')
+#             local(f'ln -s /data/web_static/releases/{archive_name}/\
+#  /data/web_static/current')
+#             os.environ['run_locally'] = "True"
 
-        # uncompress archive to the targed dir
-        run('sudo tar xzvf /tmp/web_static_{:s}.tgz --directory\
-            /data/web_static/releases/web_static_{:s}/'.
-            format(timestamp, timestamp))
+        # Upload the archive to the /tmp/ directory of the web server
 
-        # delete the archive from the web server
-        run('sudo rm /tmp/web_static_{:s}.tgz'.format(timestamp))
+        put(archive_path, f'/tmp/{archive_filename}')
+        run(f'rm -rf /data/web_static/releases/{archive_name}/')
+        run(f'mkdir -p /data/web_static/releases/{archive_name}/')
+        run(f'tar -xzf /tmp/{archive_filename} -C\
+ /data/web_static/releases/{archive_name}/')
+        # Delete the archive from the web server
+        run(f'rm /tmp/{archive_filename}')
 
-        # move contents into host web_static
-        run('sudo mv /data/web_static/releases/web_static_{:s}/web_static/*\
-            /data/web_static/releases/web_static_{}/'.format(
-            timestamp, timestamp))
+        run(f'mv /data/web_static/releases/{archive_name}/web_static/* '
+            f'/data/web_static/releases/{archive_name}/')
 
-        # remove irrelevant web_static dir
-        run('sudo rm -rf /data/web_static/releases/web_static_{}/web_static'.
-            format(timestamp))
+        run(f'rm -rf /data/web_static/releases/{archive_name}/web_static/*')
+        # Delete the symbolic link /data/web_static/current from the web server
+        run(f'rm -rf /data/web_static/current')
 
-        # delete the initial symbolic link from the web server
-        run('sudo rm -rf /data/web_static/current')
+        # Create a new the symbolic link /data/web_static/current on the
+        # web server linked to the new version of your code (/data/web_static/
+        # releases/<archive filename without extension>)
 
-        # create a new symbolic link
-        run('sudo ln -s /data/web_static/releases/web_static_{:s}/ \
-            /data/web_static/current'.format(
-            timestamp))
-    except BaseException:
+        run(f'ln -s /data/web_static/releases/{archive_name}/\
+ /data/web_static/current')
+
+        # Returns True if all operations have been done correctly,
+        # otherwise returns False
+        return True
+    except Exception:
         return False
-    # if all that succeeded, return True
-    return True
